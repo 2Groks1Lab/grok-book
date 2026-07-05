@@ -17,20 +17,16 @@ echo "Creating user: $REALNAME ($USERNAME)"
 
 # Create user directory if it doesn't exist
 mkdir -p "$USER_DIR"
+pushd $USER_DIR
 
 # Create standard symlinks (idempotent)
-ln -sfn ../../getting-started "$USER_DIR/getting-started"
-ln -sfn ../../policy          "$USER_DIR/policy"
-ln -sfn ../../sbin            "$USER_DIR/sbin"
-ln -sfn ../../docs            "$USER_DIR/docs"
-ln -sfn ../../projects        "$USER_DIR/projects"
+ln -sfn ../../getting-started "getting-started"
+ln -sfn ../../policy          "policy"
+ln -sfn ../../docs            "docs"
+ln -sfn ../../projects        "projects"
 
-# Create personal bin directory with script symlinks
-mkdir -p "$USER_DIR/bin"
-ln -sfn ../../../sbin/git-commit.sh "$USER_DIR/bin/git-commit.sh"
-ln -sfn ../../../sbin/git-push.sh   "$USER_DIR/bin/git-push.sh"
-ln -sfn ../../../sbin/git-revert.sh "$USER_DIR/bin/git-revert.sh"
-ln -sfn ../../../sbin/setup-repo.sh "$USER_DIR/bin/setup-repo.sh"
+mkdir -p "$USER_DIR/bin/"
+ln -sfn ../../sbin            "bin/sbin"
 
 # Add user to users.list if not already present
 if [ ! -f "$USERS_LIST" ]; then
@@ -43,5 +39,6 @@ if ! grep -q "^$USERNAME:" "$USERS_LIST"; then
 else
     echo "ℹ️  $USERNAME already exists in users.list"
 fi
+popd
 
 echo "✅ User '$USERNAME' created successfully."
