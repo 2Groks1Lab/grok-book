@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# Usage: ./add-user <username> <real-name>
+# Example: ./add-user cmenchin "Cody Menchin"
+
+if [ $# -ne 2 ]; then
+    echo "Usage: $0 <username> <real-name>"
+    exit 1
+fi
+
+USERNAME=$1
+REALNAME=$2
+USER_DIR="users/$USERNAME"
+USERS_LIST="users/users.list"
+
+echo "Creating user: $REALNAME ($USERNAME)"
+
+# Create user directory if it doesn't exist
+mkdir -p "$USER_DIR"
+
+# Create standard symlinks (idempotent)
+ln -sfn ../../getting-started "$USER_DIR/getting-started"
+ln -sfn ../../policy          "$USER_DIR/policy"
+ln -sfn ../../sbin            "$USER_DIR/sbin"
+ln -sfn ../../docs            "$USER_DIR/docs"
+ln -sfn ../../projects        "$USER_DIR/projects"
+
+# Create personal bin directory with script symlinks
+mkdir -p "$USER_DIR/bin"
+ln -sfn ../../../sbin/git-commit.sh "$USER_DIR/bin/git-commit.sh"
+ln -sfn ../../../sbin/git-push.sh   "$USER_DIR/bin/git-push.sh"
+ln -sfn ../../../sbin/git-revert.sh "$USER_DIR/bin/git-revert.sh"
+ln -sfn ../../../sbin/setup-repo.sh "$USER_DIR/bin/setup-repo.sh"
+
+# Add user to users.list if not already present
+if [ ! -f "$USERS_LIST" ]; then
+    touch "$USERS_LIST"
+fi
+
+if ! grep -q "^$USERNAME:" "$USERS_LIST"; then
+    echo "$USERNAME:$REALNAME" >> "$USERS_LIST"
+    echo "✅ Added $USERNAME to users.list"
+else
+    echo "ℹ️  $USERNAME already exists in users.list"
+fi
+
+echo "✅ User '$USERNAME' created successfully."
